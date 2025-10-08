@@ -49,6 +49,7 @@ export class PaymentService {
     }
 
     // make request to paystack
+
     const response = await firstValueFrom(
       this.httpService.get(
         `https://api.paystack.co/transaction/verify/${reference}`,
@@ -60,6 +61,8 @@ export class PaymentService {
         },
       ),
     );
+
+    //send an email to the client if the verification is successful
 
     return {
       data: response.data,

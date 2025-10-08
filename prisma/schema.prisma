@@ -24,3 +24,48 @@ model ApplicantData {
   nationality String?
   message     String?
 }
+
+model Admission {
+  id                        String      @id @default(cuid())
+  firstName                 String
+  lastName                  String
+  middleName                String?
+  passportPhoto             String
+  supportingDocument        String?
+  idCardPhoto               String?
+  dateOfBirth               DateTime
+  gender                    String
+  phoneNumber               String?
+  email                     String      @unique
+  nationality               String?
+  postalAddress             String?
+  maritalStatus             String?
+  languages                 String[]
+  programChoice             String
+  academics                 Academics[]
+  reference                 String
+  addressOfReference        String
+  phoneOfReference          String
+  emailOfReference          String
+  parentName                String
+  parentPhoneNumber         String
+  parentEmail               String?
+  parentAddress             String?
+  sponsor                   String
+  declarationDocument       String?
+  consentLetterFromSponsor  String?
+  supportingSponsorDocument String?
+}
+
+model Academics {
+  id                     String     @id @default(cuid())
+  qualification          String[]
+  institution            String[]
+  yearOfCompletion       String[]
+  country                String[]
+  supportingCertificates String[]
+  startDate              DateTime[]
+  uniqueId               String     @unique
+  endDate                DateTime[]
+  admission              Admission  @relation(fields: [uniqueId], references: [id], onDelete: Cascade)
+}
