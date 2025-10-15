@@ -21,8 +21,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
         port: 587,
         secure: false,
         auth: {
-          user: '99501f001@smtp-brevo.com',
-          pass: 'LHETMhpJNGz67fQU',
+          user: process.env.BREVO_USER,
+          pass: process.env.BREVO_PASS,
         },
       },
       defaults: {
