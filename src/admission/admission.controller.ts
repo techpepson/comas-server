@@ -4,6 +4,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Body,
+  Query,
 } from '@nestjs/common';
 import { AdmissionService } from './admission.service';
 // import AdmissionDTO from 'src/dto/admission.dto';
@@ -50,6 +51,7 @@ export class AdmissionController {
   async createAdmission(
     @Body()
     admissionDto: AdmissionDTO,
+    @Query('user') user: string,
     @UploadedFiles()
     files: {
       supportingDocument?: Express.Multer.File[];
@@ -61,6 +63,6 @@ export class AdmissionController {
       supportingCertificates?: Express.Multer.File[];
     },
   ) {
-    return this.admissionService.createAdmission(files, admissionDto);
+    return this.admissionService.createAdmission(files, admissionDto, user);
   }
 }

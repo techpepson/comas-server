@@ -13,23 +13,29 @@ export class ApplicationService {
   async createApplication(createApplicationDto: CreateApplicationDto) {
     //create a new applicant data
     try {
+      //initialize payment right after user submits data
+      const paymentData: any = await this.paymentService.initializeTransaction(
+        createApplicationDto.email,
+      );
+
       await this.prisma.applicantData.create({
         data: {
           firstName: createApplicationDto.firstName,
           lastName: createApplicationDto.lastName,
-          middleName: createApplicationDto.middleName ?? null,
+          middleName: createApplicationDto.middleName || '',
           email: createApplicationDto.email,
-          phoneNumber: createApplicationDto.phoneNumber ?? null,
-          nationality: createApplicationDto.nationality ?? 'Ghanaian',
-          message: createApplicationDto.message ?? null,
+          phoneNumber: createApplicationDto.phoneNumber,
+          nationality: createApplicationDto.nationality,
+          message: createApplicationDto.message,
+          payment: {
+            create: {
+              reference: paymentData.data.reference,
+              amount: 200,
+            },
+          },
         },
       });
 
-      //initialize payment right after user submits data
-
-      const paymentData: any = await this.paymentService.initializeTransaction(
-        createApplicationDto.email,
-      );
       return {
         message: 'Your application request has been submitted successfully',
         success: true,

@@ -9,11 +9,18 @@ export class HelpersService {
 
   private readonly bucketName = 'comas-applicant-pdf';
 
-  async uploadPdf(file: Express.Multer.File) {
+  async uploadPdf(file?: Express.Multer.File) {
     const fileExt = file?.originalname?.split('.').pop();
     const fileName = `${uuid()}.${fileExt}`;
     const filePath = `pdfs/${fileName}`;
-    console.log(fileExt);
+
+    if (!file) {
+      return {
+        path: null,
+        publicUrl: null,
+        signedUrl: null,
+      };
+    }
 
     const { data, error } = await supabase.storage
       .from(this.bucketName)

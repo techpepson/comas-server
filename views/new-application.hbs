@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Admission Application</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f8fafc;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        background: #fff;
+        max-width: 650px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      }
+      h1 {
+        color: #003366;
+        border-bottom: 2px solid #003366;
+        padding-bottom: 5px;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .label {
+        font-weight: bold;
+        color: #555;
+      }
+      .value {
+        color: #333;
+      }
+      a {
+        color: #1a73e8;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .file-link {
+        display: block;
+        margin: 3px 0;
+      }
+      .photo {
+        width: 100px;
+        border-radius: 6px;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>New Admission Application</h1>
+      <p>A new applicant has submitted their admission form. Details are below:</p>
+
+      <div class="section">
+        <h3>👤 Personal Information</h3>
+        <p><span class="label">Name:</span> {{applicant.firstName}} {{applicant.middleName}} {{applicant.lastName}}</p>
+        <p><span class="label">Email:</span> {{applicant.email}}</p>
+        <p><span class="label">Phone:</span> {{applicant.phoneNumber}}</p>
+        <p><span class="label">Gender:</span> {{applicant.gender}}</p>
+        <p><span class="label">Date of Birth:</span> {{applicant.dateOfBirth}}</p>
+        <p><span class="label">Nationality:</span> {{applicant.nationality}}</p>
+        <p><span class="label">Marital Status:</span> {{applicant.maritalStatus}}</p>
+        <p><span class="label">Languages:</span> {{applicant.languages}}</p>
+      </div>
+
+      <div class="section">
+        <h3>📚 Academic Information</h3>
+        <p><span class="label">Program Choice:</span> {{applicant.programChoice}}</p>
+        <p><span class="label">Institution:</span> {{applicant.institution}}</p>
+        <p><span class="label">Qualification:</span> {{applicant.qualification}}</p>
+        <p><span class="label">Year of Completion:</span> {{applicant.yearOfCompletion}}</p>
+
+        {{#if supportingCertificates}}
+          <p><span class="label">Supporting Certificates:</span></p>
+          {{#each supportingCertificates}}
+            <a class="file-link" href="{{this}}" target="_blank">View Certificate</a>
+          {{/each}}
+        {{/if}}
+      </div>
+
+      <div class="section">
+        <h3>👪 Guardian / Reference</h3>
+        <p><span class="label">Reference Name:</span> {{applicant.reference}}</p>
+        <p><span class="label">Reference Email:</span> {{applicant.emailOfReference}}</p>
+        <p><span class="label">Reference Phone:</span> {{applicant.phoneOfReference}}</p>
+        <p><span class="label">Parent Name:</span> {{applicant.parentName}}</p>
+        <p><span class="label">Parent Phone:</span> {{applicant.parentPhoneNumber}}</p>
+        <p><span class="label">Parent Email:</span> {{applicant.parentEmail}}</p>
+      </div>
+
+      <div class="section">
+        <h3>📎 Uploaded Files</h3>
+        {{#if passportPhoto}}
+          <p><span class="label">Passport Photo:</span> <a href="{{passportPhoto}}" target="_blank">View</a></p>
+        {{/if}}
+        {{#if idCardPhoto}}
+          <p><span class="label">ID Card Photo:</span> <a href="{{idCardPhoto}}" target="_blank">View</a></p>
+        {{/if}}
+        {{#if supportingDocument}}
+          <p><span class="label">Supporting Document:</span> <a href="{{supportingDocument}}" target="_blank">View</a></p>
+        {{/if}}
+        {{#if declarationDocument}}
+          <p><span class="label">Declaration Document:</span> <a href="{{declarationDocument}}" target="_blank">View</a></p>
+        {{/if}}
+        {{#if supportingSponsorDocument}}
+          <p><span class="label">Sponsor Document:</span> <a href="{{supportingSponsorDocument}}" target="_blank">View</a></p>
+        {{/if}}
+        {{#if consentLetterFromSponsor}}
+          <p><span class="label">Consent Letter:</span> <a href="{{consentLetterFromSponsor}}" target="_blank">View</a></p>
+        {{/if}}
+      </div>
+
+      <div class="section">
+        <p>This message was automatically sent by the <strong>College of Medical and Allied Sciences (CoMAS)</strong> application portal.</p>
+      </div>
+    </div>
+  </body>
+</html>

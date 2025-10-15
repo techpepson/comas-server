@@ -15,20 +15,37 @@ datasource db {
 }
 
 model ApplicantData {
-  id          String  @id @default(cuid())
-  firstName   String
-  lastName    String
-  middleName  String?
-  email       String
-  phoneNumber String?
-  nationality String?
-  message     String?
+  id             String    @id @default(cuid())
+  firstName      String
+  lastName       String
+  middleName     String?
+  email          String    @unique
+  phoneNumber    String?
+  nationality    String?
+  message        String?
+  payment        Payment[]
+  hasUserApplied Boolean   @default(false)
+}
+
+// Prisma schema (example)
+model Payment {
+  id        String        @id @default(uuid())
+  userId    String
+  reference String        @unique
+  amount    Int // in smallest currency unit (kobo, pesewa)
+  status    String        @default("pending")
+  provider  String?
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  applicant ApplicantData @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Admission {
   id                        String      @id @default(cuid())
   firstName                 String
   lastName                  String
+  hasUserApplied            Boolean     @default(false)
   middleName                String?
   passportPhoto             String
   supportingDocument        String?

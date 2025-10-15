@@ -9,9 +9,33 @@ import { HelpersModule } from './helpers/helpers.module';
 import { PaymentModule } from './payment/payment.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp-relay.brevo.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: '99501f001@smtp-brevo.com',
+          pass: 'LHETMhpJNGz67fQU',
+        },
+      },
+      defaults: {
+        from: '"Admissions Office" <admissions@comas.edu.gh>',
+      },
+      template: {
+        dir: join(__dirname, '..', 'views'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
     AdmissionModule,
     HelpersModule,
     MulterModule.register({
