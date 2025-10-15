@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
@@ -96,3 +97,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+=======
+# comas-server
+Comas is a medical organization that provides medical education to students in Ghana. The server allows to perform online applications, make contacts and a whole lot.
+>>>>>>> 3c2e33a30bf29a042cc11f7a64586f852e2ca361
