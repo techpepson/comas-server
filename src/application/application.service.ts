@@ -18,29 +18,34 @@ export class ApplicationService {
         createApplicationDto.email,
       );
 
-      await this.prisma.applicantData.create({
-        data: {
-          firstName: createApplicationDto.firstName,
-          lastName: createApplicationDto.lastName,
-          middleName: createApplicationDto.middleName || '',
-          email: createApplicationDto.email,
-          phoneNumber: createApplicationDto.phoneNumber,
-          nationality: createApplicationDto.nationality,
-          message: createApplicationDto.message,
-          payment: {
-            create: {
-              reference: paymentData.data.reference,
-              amount: 200,
+      console.log(paymentData);
+      if (paymentData.status === true) {
+        await this.prisma.applicantData.create({
+          data: {
+            firstName: createApplicationDto.firstName,
+            lastName: createApplicationDto.lastName,
+            middleName: createApplicationDto.middleName || '',
+            email: createApplicationDto.email,
+            phoneNumber: createApplicationDto.phoneNumber,
+            nationality: createApplicationDto.nationality,
+            message: createApplicationDto.message,
+            payment: {
+              create: {
+                reference: paymentData.data.reference,
+                amount: 200,
+              },
             },
           },
-        },
-      });
+        });
 
-      return {
-        message: 'Your application request has been submitted successfully',
-        success: true,
-        paymentData,
-      };
+        return {
+          message: 'Your application request has been submitted successfully',
+          success: true,
+          paymentData,
+        };
+      } else {
+        return;
+      }
     } catch (error) {
       if (error instanceof InternalServerErrorException) {
         return {

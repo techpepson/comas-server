@@ -68,8 +68,13 @@ export class AdmissionService {
       const passportPhoto = files?.passportPhoto?.[0];
       const idCardPhoto = files?.idCardPhoto?.[0];
 
-      // if (!supportingDocument)
-      //   throw new BadRequestException('supportingDocument file is required');
+      if (
+        !files.supportingCertificates ||
+        files.supportingCertificates.length === 0
+      )
+        throw new BadRequestException(
+          'Supporting certificates files are required',
+        );
       // if (!declarationDocument)
       //   throw new BadRequestException('declarationDocument file is required');
       // if (!supportingSponsorDocument)
@@ -199,27 +204,43 @@ export class AdmissionService {
         });
         return applicant;
       });
-      await this.mailer.sendMail({
-        to: 'admissions@comas.edu.gh',
-        subject: `New Admission Application - ${admissionDto.firstName} ${admissionDto.lastName}`,
-        template: 'new-application',
-        context: {
-          applicant: admissionDto,
-          passportPhoto: uploadedPassportPhoto?.signedUrl?.data?.signedUrl,
-          idCardPhoto: uploadIdCardPhoto?.signedUrl?.data?.signedUrl,
-          supportingDocument:
-            uploadedSupportingDocument?.signedUrl?.data?.signedUrl,
-          declarationDocument:
-            uploadedDeclarationDocument?.signedUrl?.data?.signedUrl,
-          supportingSponsorDocument:
-            uploadedSupportingSponsorDocument?.signedUrl?.data?.signedUrl,
-          consentLetterFromSponsor:
-            uploadedConsentLetterFromSponsor?.signedUrl?.data?.signedUrl,
-          supportingCertificates: uploadedSupportingCertificates.map(
-            (f) => f?.data?.signedUrl,
-          ),
-        },
-      });
+
+      //send an email after prisma transaction succeeds
+      try {
+        await this.mailer.sendMail({
+          to: 'admissions@comas.edu.gh',
+          subject: `New Admission Application - ${admissionDto.firstName} ${admissionDto.lastName}`,
+          template: 'new-application',
+          context: {
+            applicant: admissionDto,
+            passportPhoto: uploadedPassportPhoto?.signedUrl?.data?.signedUrl,
+            idCardPhoto: uploadIdCardPhoto?.signedUrl?.data?.signedUrl,
+            supportingDocument:
+              uploadedSupportingDocument?.signedUrl?.data?.signedUrl,
+            declarationDocument:
+              uploadedDeclarationDocument?.signedUrl?.data?.signedUrl,
+            supportingSponsorDocument:
+              uploadedSupportingSponsorDocument?.signedUrl?.data?.signedUrl,
+            consentLetterFromSponsor:
+              uploadedConsentLetterFromSponsor?.signedUrl?.data?.signedUrl,
+            supportingCertificates: uploadedSupportingCertificates.map(
+              (f) => f?.data?.signedUrl,
+            ),
+          },
+        });
+      } catch (mailError) {
+        console.log(mailError);
+        await this.prisma.$transaction([
+          this.prisma.admission.delete({ where: { id: applicantData.id } }),
+          this.prisma.applicantData.update({
+            where: { id: userId },
+            data: { hasUserApplied: false },
+          }),
+        ]);
+        throw new InternalServerErrorException(
+          'Application submission failed (email not sent)',
+        );
+      }
 
       return {
         message: 'Application submitted successfully',

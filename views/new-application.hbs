@@ -75,12 +75,7 @@
         <p><span class="label">Qualification:</span> {{applicant.qualification}}</p>
         <p><span class="label">Year of Completion:</span> {{applicant.yearOfCompletion}}</p>
 
-        {{#if supportingCertificates}}
-          <p><span class="label">Supporting Certificates:</span></p>
-          {{#each supportingCertificates}}
-            <a class="file-link" href="{{this}}" target="_blank">View Certificate</a>
-          {{/each}}
-        {{/if}}
+        
       </div>
 
       <div class="section">
@@ -94,6 +89,12 @@
       </div>
 
       <div class="section">
+        {{#if supportingCertificates}}
+          <p><span class="label">Supporting Certificates:</span></p>
+          {{#each supportingCertificates}}
+            <a class="file-link" href="{{this}}" target="_blank">View Certificate</a>
+          {{/each}}
+        {{/if}}
         <h3>📎 Uploaded Files</h3>
         {{#if passportPhoto}}
           <p><span class="label">Passport Photo:</span> <a href="{{passportPhoto}}" target="_blank">View</a></p>
