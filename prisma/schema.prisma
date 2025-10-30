@@ -19,7 +19,7 @@ model ApplicantData {
   firstName      String
   lastName       String
   middleName     String?
-  email          String    @unique
+  email          String
   phoneNumber    String?
   nationality    String?
   message        String?

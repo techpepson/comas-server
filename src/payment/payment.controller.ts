@@ -63,7 +63,7 @@ export class PaymentController {
         await this.paymentService.verifyTransaction(reference);
 
       if (verifyTransaction?.data?.status === true) {
-        const user = await this.prisma.applicantData.findUnique({
+        const user = await this.prisma.applicantData.findFirst({
           where: { email },
           include: { payment: true },
         });

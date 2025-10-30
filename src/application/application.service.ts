@@ -11,13 +11,11 @@ export class ApplicationService {
   ) {}
 
   async createApplication(createApplicationDto: CreateApplicationDto) {
-    //create a new applicant data
     try {
       //initialize payment right after user submits data
       const paymentData: any = await this.paymentService.initializeTransaction(
         createApplicationDto.email,
       );
-
       console.log(paymentData);
       if (paymentData.status === true) {
         await this.prisma.applicantData.create({
