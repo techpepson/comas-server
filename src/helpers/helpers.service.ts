@@ -10,17 +10,16 @@ export class HelpersService {
   private readonly bucketName = 'comas-applicant-pdf';
 
   async uploadPdf(file?: Express.Multer.File) {
-    const fileExt = file?.originalname?.split('.').pop();
-    const fileName = `${uuid()}.${fileExt}`;
-    const filePath = `pdfs/${fileName}`;
-
     if (!file) {
       return {
         path: null,
         publicUrl: null,
-        signedUrl: null,
       };
     }
+
+    const fileExt = file.originalname.split('.').pop();
+    const fileName = `${uuid()}.${fileExt}`;
+    const filePath = `pdfs/${fileName}`;
 
     const { data, error } = await supabase.storage
       .from(this.bucketName)
@@ -36,24 +35,26 @@ export class HelpersService {
       );
     }
 
+    // Get the permanent public URL (works only if the bucket is public)
     const { data: publicData } = supabase.storage
       .from(this.bucketName)
       .getPublicUrl(filePath);
 
-    //sign the public url
-    const singedUrl = await supabase.storage
-      .from(this.bucketName)
-      .createSignedUrl(data.path, 3600);
-
     return {
       path: data.path,
       publicUrl: publicData.publicUrl,
-      signedUrl: singedUrl,
     };
   }
 
   async uploadImage(file: Express.Multer.File) {
-    const fileExt = file?.originalname?.split('.').pop();
+    if (!file) {
+      return {
+        path: null,
+        publicUrl: null,
+      };
+    }
+
+    const fileExt = file.originalname.split('.').pop();
     const fileName = `${uuid()}.${fileExt}`;
     const filePath = `images/${fileName}`;
 
@@ -75,15 +76,9 @@ export class HelpersService {
       .from(this.bucketName)
       .getPublicUrl(filePath);
 
-    //sign the public url
-    const singedUrl = await supabase.storage
-      .from(this.bucketName)
-      .createSignedUrl(data.path, 3600);
-
     return {
       path: data.path,
       publicUrl: publicData.publicUrl,
-      signedUrl: singedUrl,
     };
   }
 

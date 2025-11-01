@@ -55,9 +55,9 @@ export class AdmissionService {
         },
       });
 
-      if (user?.hasUserApplied) {
-        throw new ConflictException('User has not made payment');
-      }
+      // if (user?.hasUserApplied) {
+      //   throw new ConflictException('User has not made payment');
+      // }
 
       const supportingDocument = files?.supportingDocument?.[0] ?? null;
       const declarationDocument = files?.declarationDocument?.[0] ?? null;
@@ -114,7 +114,7 @@ export class AdmissionService {
         (files?.supportingCertificates ?? []).map(async (e) => {
           if (e.buffer !== null) {
             const uploadedFile = await this.helpersService.uploadPdf(e);
-            return uploadedFile.signedUrl;
+            return uploadedFile.publicUrl;
           }
           return undefined;
         }),
@@ -132,13 +132,10 @@ export class AdmissionService {
             firstName: admissionDto.firstName,
             lastName: admissionDto.lastName,
             middleName: admissionDto.middleName,
-            passportPhoto:
-              uploadedPassportPhoto.signedUrl.data?.signedUrl || '',
-            supportingDocument:
-              uploadedSupportingDocument?.signedUrl?.data?.signedUrl ?? '',
-            idCardPhoto: uploadIdCardPhoto.signedUrl.data?.signedUrl || '',
-            declarationDocument:
-              uploadedDeclarationDocument?.signedUrl?.data?.signedUrl || '',
+            passportPhoto: uploadedPassportPhoto.publicUrl || '',
+            supportingDocument: uploadedSupportingDocument?.publicUrl ?? '',
+            idCardPhoto: uploadIdCardPhoto?.publicUrl || '',
+            declarationDocument: uploadedDeclarationDocument?.publicUrl || '',
             email: admissionDto.email,
             phoneNumber: admissionDto.phoneNumber,
             dateOfBirth: new Date(admissionDto.dateOfBirth),
@@ -160,11 +157,9 @@ export class AdmissionService {
             parentAddress: admissionDto.parentAddress,
             sponsor: admissionDto.sponsor,
             supportingSponsorDocument:
-              uploadedSupportingSponsorDocument?.signedUrl?.data?.signedUrl ||
-              '',
+              uploadedSupportingSponsorDocument?.publicUrl || '',
             consentLetterFromSponsor:
-              uploadedConsentLetterFromSponsor?.signedUrl?.data?.signedUrl ||
-              '',
+              uploadedConsentLetterFromSponsor?.publicUrl || '',
             academics: {
               create: {
                 qualification: Array.isArray(admissionDto.qualification)
@@ -186,7 +181,7 @@ export class AdmissionService {
                   ? admissionDto.endDate
                   : [new Date(admissionDto.endDate)],
                 supportingCertificates: uploadedSupportingCertificates.map(
-                  (e) => e?.data?.signedUrl || '',
+                  (e) => e || '',
                 ),
               },
             },
@@ -213,18 +208,16 @@ export class AdmissionService {
           template: 'new-application',
           context: {
             applicant: admissionDto,
-            passportPhoto: uploadedPassportPhoto?.signedUrl?.data?.signedUrl,
-            idCardPhoto: uploadIdCardPhoto?.signedUrl?.data?.signedUrl,
-            supportingDocument:
-              uploadedSupportingDocument?.signedUrl?.data?.signedUrl,
-            declarationDocument:
-              uploadedDeclarationDocument?.signedUrl?.data?.signedUrl,
+            passportPhoto: uploadedPassportPhoto?.publicUrl,
+            idCardPhoto: uploadIdCardPhoto?.publicUrl,
+            supportingDocument: uploadedSupportingDocument?.publicUrl,
+            declarationDocument: uploadedDeclarationDocument?.publicUrl,
             supportingSponsorDocument:
-              uploadedSupportingSponsorDocument?.signedUrl?.data?.signedUrl,
+              uploadedSupportingSponsorDocument?.publicUrl,
             consentLetterFromSponsor:
-              uploadedConsentLetterFromSponsor?.signedUrl?.data?.signedUrl,
+              uploadedConsentLetterFromSponsor?.publicUrl,
             supportingCertificates: uploadedSupportingCertificates.map(
-              (f) => f?.data?.signedUrl,
+              (f) => f,
             ),
           },
         });

@@ -84,7 +84,8 @@ export class PaymentController {
         });
 
         const clientUrl = process.env.CLIENT_URL;
-        //send an email to the user for their application\
+
+        //send an email to the user for their application
         await this.mailer.sendMail({
           to: user.email,
           subject: 'Your Application Payment was Successful',
