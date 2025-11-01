@@ -4,13 +4,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { configDotenv } from 'dotenv';
-import * as express from 'express';
 
 async function bootstrap() {
   configDotenv();
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ limit: '50mb', extended: true }));
   app.setGlobalPrefix('api');
   app.enableCors({
     origin: [
