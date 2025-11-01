@@ -10,12 +10,17 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: '*',
+    origin: [
+      'https://comas.edu.gh',
+      'https://www.comas.edu.gh',
+      'http://localhost:5174', // optional, for local testing
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     exposedHeaders: ['set-cookie'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
   app.useStaticAssets(join(__dirname, 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
