@@ -236,6 +236,7 @@ export class AdmissionService {
             data: { hasUserApplied: false },
           }),
         ]);
+
         throw new InternalServerErrorException(
           'Application submission failed (email not sent)',
         );
@@ -252,12 +253,16 @@ export class AdmissionService {
         );
       }
       if (error instanceof BadRequestException) {
-        throw error;
+        throw new BadRequestException('User ID is required');
       }
       if (error instanceof ConflictException) {
-        throw error;
+        throw new ConflictException('Applicant already exists');
       }
-      throw Error(error.message);
+      if (error instanceof ForbiddenException) {
+        throw new ForbiddenException('User had not made payment');
+      }
+
+      throw new Error(error.message);
     }
   }
 }
