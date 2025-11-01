@@ -55,10 +55,6 @@ export class AdmissionService {
         },
       });
 
-      // if (user?.hasUserApplied) {
-      //   throw new ConflictException('User has not made payment');
-      // }
-
       const supportingDocument = files?.supportingDocument?.[0] ?? null;
       const declarationDocument = files?.declarationDocument?.[0] ?? null;
       const supportingSponsorDocument =
