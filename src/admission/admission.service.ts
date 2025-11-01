@@ -2,6 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -54,6 +55,14 @@ export class AdmissionService {
           id: userId,
         },
       });
+
+      if (!user) {
+        throw new ForbiddenException('User had not made payment');
+      }
+
+      if (user.hasUserApplied) {
+        throw new ConflictException('User has already applied');
+      }
 
       const supportingDocument = files?.supportingDocument?.[0] ?? null;
       const declarationDocument = files?.declarationDocument?.[0] ?? null;
