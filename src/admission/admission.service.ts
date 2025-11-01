@@ -175,11 +175,12 @@ export class AdmissionService {
                   ? admissionDto.country
                   : [admissionDto.country],
                 startDate: Array.isArray(admissionDto.startDate)
-                  ? admissionDto.startDate
+                  ? admissionDto.startDate.map((d) => new Date(d))
                   : [new Date(admissionDto.startDate)],
                 endDate: Array.isArray(admissionDto.endDate)
-                  ? admissionDto.endDate
+                  ? admissionDto.endDate.map((d) => new Date(d))
                   : [new Date(admissionDto.endDate)],
+
                 supportingCertificates: uploadedSupportingCertificates.map(
                   (e) => e || '',
                 ),
