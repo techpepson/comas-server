@@ -1,6 +1,6 @@
 import { Injectable, PreconditionFailedException } from '@nestjs/common';
 import { supabase } from 'src/supabase/supabase-client';
-import { v4 as uuid } from 'uuid';
+// import { v4 as uuid } from 'uuid';
 import nodemailer from 'nodemailer';
 
 @Injectable()
@@ -9,7 +9,11 @@ export class HelpersService {
 
   private readonly bucketName = 'comas-applicant-pdf';
 
-  async uploadPdf(file?: Express.Multer.File) {
+  async uploadPdf(
+    file?: Express.Multer.File,
+    firstName?: string,
+    mediaType?: string,
+  ) {
     if (!file) {
       return {
         path: null,
@@ -18,7 +22,7 @@ export class HelpersService {
     }
 
     const fileExt = file.originalname.split('.').pop();
-    const fileName = `${uuid()}.${fileExt}`;
+    const fileName = `${firstName} - ${mediaType}.${fileExt}`;
     const filePath = `pdfs/${fileName}`;
 
     const { data, error } = await supabase.storage
@@ -46,7 +50,11 @@ export class HelpersService {
     };
   }
 
-  async uploadImage(file: Express.Multer.File) {
+  async uploadImage(
+    file: Express.Multer.File,
+    firstName: string,
+    mediaType: string,
+  ) {
     if (!file) {
       return {
         path: null,
@@ -55,7 +63,7 @@ export class HelpersService {
     }
 
     const fileExt = file.originalname.split('.').pop();
-    const fileName = `${uuid()}.${fileExt}`;
+    const fileName = `${firstName} - ${mediaType}.${fileExt}`;
     const filePath = `images/${fileName}`;
 
     const { data, error } = await supabase.storage

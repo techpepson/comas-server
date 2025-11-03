@@ -99,37 +99,63 @@ export class AdmissionService {
 
       // Fix: Convert null to undefined
       const uploadedSupportingDocument = supportingDocument
-        ? await this.helpersService.uploadPdf(supportingDocument)
+        ? await this.helpersService.uploadPdf(
+            supportingDocument,
+            admissionDto.firstName,
+            'supporting-document',
+          )
         : null;
 
       // Apply the same pattern to other optional files
       const uploadedDeclarationDocument = declarationDocument
-        ? await this.helpersService.uploadPdf(declarationDocument)
+        ? await this.helpersService.uploadPdf(
+            declarationDocument,
+            admissionDto.firstName,
+            'declaration-document',
+          )
         : null;
 
       const uploadedSupportingSponsorDocument = supportingSponsorDocument
-        ? await this.helpersService.uploadPdf(supportingSponsorDocument)
+        ? await this.helpersService.uploadPdf(
+            supportingSponsorDocument,
+            admissionDto.firstName,
+            'supporting-sponsor-document',
+          )
         : null;
 
       const uploadedConsentLetterFromSponsor = consentLetterFromSponsor
-        ? await this.helpersService.uploadPdf(consentLetterFromSponsor)
+        ? await this.helpersService.uploadPdf(
+            consentLetterFromSponsor,
+            admissionDto.firstName,
+            'consent-letter-from-sponsor',
+          )
         : null;
 
       const uploadedSupportingCertificates = await Promise.all(
-        (files?.supportingCertificates ?? []).map(async (e) => {
+        (files?.supportingCertificates ?? []).map(async (e, index) => {
           if (e.buffer !== null) {
-            const uploadedFile = await this.helpersService.uploadPdf(e);
+            const uploadedFile = await this.helpersService.uploadPdf(
+              e,
+              admissionDto.firstName,
+              `supporting-certificate ${index + 1}`,
+            );
             return uploadedFile.publicUrl;
           }
           return undefined;
         }),
       );
 
-      const uploadedPassportPhoto =
-        await this.helpersService.uploadImage(passportPhoto);
+      const uploadedPassportPhoto = await this.helpersService.uploadImage(
+        passportPhoto,
+        admissionDto.firstName,
+        'passport-photo',
+      );
 
-      const uploadIdCardPhoto =
-        await this.helpersService.uploadImage(idCardPhoto);
+      const uploadIdCardPhoto = await this.helpersService.uploadImage(
+        idCardPhoto,
+        admissionDto.firstName,
+        'id-card-photo',
+      );
 
       const applicantData = await this.prisma.$transaction(async (ctx) => {
         const applicant = await ctx.admission.create({
