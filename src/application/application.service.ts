@@ -15,6 +15,7 @@ export class ApplicationService {
       //initialize payment right after user submits data
       const paymentData: any = await this.paymentService.initializeTransaction(
         createApplicationDto.email,
+        createApplicationDto.applicantType,
       );
       console.log(paymentData);
       if (paymentData.status === true) {
@@ -27,10 +28,14 @@ export class ApplicationService {
             phoneNumber: createApplicationDto.phoneNumber,
             nationality: createApplicationDto.nationality,
             message: createApplicationDto.message,
+            applicantType: createApplicationDto.applicantType,
             payment: {
               create: {
                 reference: paymentData.data.reference,
-                amount: 200,
+                amount:
+                  createApplicationDto.applicantType == 'Undergraduate'
+                    ? 200
+                    : 300,
               },
             },
           },

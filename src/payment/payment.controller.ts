@@ -92,7 +92,7 @@ export class PaymentController {
           template: 'verification-success', // views/emails/verification-success.hbs
           context: {
             name: user.firstName,
-            link: `${clientUrl}/?user=${user.id}`, // 👈 your actual app link
+            link: `${clientUrl}/?user=${user.id}&applicantType=${user.applicantType}`, // 👈 your actual app link
           },
         });
         console.log(user.email);

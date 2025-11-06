@@ -10,10 +10,10 @@ export class PaymentService {
     private configService: ConfigService,
   ) {}
 
-  async initializeTransaction(email: string) {
+  async initializeTransaction(email: string, applicantType: string) {
     const params = {
       email,
-      amount: '20000',
+      amount: applicantType == 'Undergraduate' ? '20000' : '30000',
     };
 
     const paystackSecretKey: string | undefined =

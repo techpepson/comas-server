@@ -23,6 +23,7 @@ model ApplicantData {
   phoneNumber    String?
   nationality    String?
   message        String?
+  applicantType String @default("")
   payment        Payment[]
   hasUserApplied Boolean   @default(false)
 }

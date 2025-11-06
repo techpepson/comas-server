@@ -28,6 +28,9 @@ class CreateApplicationDto {
   @IsString()
   @IsOptional()
   message?: string;
+
+  @IsString()
+  applicantType: string;
 }
 
 export default CreateApplicationDto;
