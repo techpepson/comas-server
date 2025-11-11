@@ -235,7 +235,7 @@ export class AdmissionService {
       //send an email after prisma transaction succeeds
       try {
         await this.mailer.sendMail({
-          to: 'admissions@comas.edu.gh',
+          to: ['admissions@comas.edu.gh', 'k.aboagyegyedu@comas.edu.gh'],
           subject: `New Admission Application - ${admissionDto.firstName} ${admissionDto.lastName}`,
           template: 'new-application',
           context: {
