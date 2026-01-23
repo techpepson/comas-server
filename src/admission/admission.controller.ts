@@ -54,13 +54,13 @@ export class AdmissionController {
     @Query('user') user: string,
     @UploadedFiles()
     files: {
-      supportingDocument?: Express.Multer.File[];
-      passportPhoto?: Express.Multer.File[];
-      idCardPhoto?: Express.Multer.File[];
+      supportingDocument: Express.Multer.File[];
+      passportPhoto: Express.Multer.File[];
+      idCardPhoto: Express.Multer.File[];
       declarationDocument?: Express.Multer.File[];
       supportingSponsorDocument?: Express.Multer.File[];
       consentLetterFromSponsor?: Express.Multer.File[];
-      supportingCertificates?: Express.Multer.File[];
+      supportingCertificates: Express.Multer.File[];
     },
   ) {
     return this.admissionService.createAdmission(files, admissionDto, user);

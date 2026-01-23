@@ -23,27 +23,38 @@ export class AdmissionService {
   //use an array of Express.Multer for multiple uploads, even for single file upload items
   async createAdmission(
     files: {
-      supportingDocument?: Express.Multer.File[];
-      passportPhoto?: Express.Multer.File[];
-      idCardPhoto?: Express.Multer.File[];
+      supportingDocument: Express.Multer.File[];
+      passportPhoto: Express.Multer.File[];
+      idCardPhoto: Express.Multer.File[];
       declarationDocument?: Express.Multer.File[];
       supportingSponsorDocument?: Express.Multer.File[];
       consentLetterFromSponsor?: Express.Multer.File[];
-      supportingCertificates?: Express.Multer.File[];
+      supportingCertificates: Express.Multer.File[];
     },
     admissionDto: AdmissionDTO,
     userId: string,
   ) {
     try {
+      if (!userId) {
+        throw new BadRequestException('User ID is required');
+      }
+
+      if (!files.idCardPhoto || files.idCardPhoto.length === 0) {
+        throw new BadRequestException('ID Card Photo file is required');
+      }
+
+      if (!files.passportPhoto || files.passportPhoto.length === 0) {
+        throw new BadRequestException('Passport Photo file is required');
+      }
+      if (!files.supportingDocument || files.supportingDocument.length === 0) {
+        throw new BadRequestException('Supporting Document file is required');
+      }
+
       const applicant = await this.prisma.admission.findUnique({
         where: {
           email: admissionDto.email,
         },
       });
-
-      if (!userId) {
-        throw new BadRequestException('User ID is required');
-      }
 
       if (applicant) {
         throw new ConflictException('Applicant already exists');
@@ -54,10 +65,21 @@ export class AdmissionService {
         where: {
           id: userId,
         },
+        include: {
+          payment: true,
+        },
       });
 
       if (!user) {
-        throw new ForbiddenException('User had not made payment');
+        throw new ForbiddenException('User not found');
+      }
+
+      const hasSuccessfulPayment = user.payment.some(
+        (p) => p.status === 'success',
+      );
+
+      if (!hasSuccessfulPayment) {
+        throw new ForbiddenException('User has not made payment');
       }
 
       if (user.hasUserApplied) {
@@ -238,6 +260,52 @@ export class AdmissionService {
           to: ['admissions@comas.edu.gh', 'k.aboagyegyedu@comas.edu.gh'],
           subject: `New Admission Application - ${admissionDto.firstName} ${admissionDto.lastName}`,
           template: 'new-application',
+          attachments: [
+            {
+              filename: 'passport-photo.jpg',
+              content: files.passportPhoto[0].buffer,
+            },
+            {
+              filename: 'id-card-photo.jpg',
+              content: files.idCardPhoto[0].buffer,
+            },
+            ...(supportingDocument
+              ? [
+                  {
+                    filename: 'supporting-document.pdf',
+                    content: supportingDocument.buffer,
+                  },
+                ]
+              : []),
+            ...(declarationDocument
+              ? [
+                  {
+                    filename: 'declaration-document.pdf',
+                    content: declarationDocument.buffer,
+                  },
+                ]
+              : []),
+            ...(supportingSponsorDocument
+              ? [
+                  {
+                    filename: 'supporting-sponsor-document.pdf',
+                    content: supportingSponsorDocument.buffer,
+                  },
+                ]
+              : []),
+            ...(consentLetterFromSponsor
+              ? [
+                  {
+                    filename: 'consent-letter-from-sponsor.pdf',
+                    content: consentLetterFromSponsor.buffer,
+                  },
+                ]
+              : []),
+            ...files.supportingCertificates.map((file, index) => ({
+              filename: `supporting-certificate-${index + 1}.pdf`,
+              content: file.buffer,
+            })),
+          ],
           context: {
             applicant: admissionDto,
             passportPhoto: uploadedPassportPhoto?.publicUrl,
@@ -273,22 +341,20 @@ export class AdmissionService {
         applicantData,
       };
     } catch (error) {
-      if (error instanceof InternalServerErrorException) {
-        throw new InternalServerErrorException(
-          'An internal error occurred while submitting application',
-        );
-      }
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException('User ID is required');
-      }
-      if (error instanceof ConflictException) {
-        throw new ConflictException('Applicant already exists');
-      }
-      if (error instanceof ForbiddenException) {
-        throw new ForbiddenException('User had not made payment');
+      console.error('Error in createAdmission:', error);
+
+      if (
+        error instanceof BadRequestException ||
+        error instanceof ConflictException ||
+        error instanceof ForbiddenException ||
+        error instanceof InternalServerErrorException
+      ) {
+        throw error;
       }
 
-      throw new Error(error.message);
+      throw new InternalServerErrorException(
+        error?.message || 'An unexpected error occurred',
+      );
     }
   }
 }
