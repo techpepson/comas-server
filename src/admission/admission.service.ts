@@ -353,6 +353,7 @@ export class AdmissionService {
       }
 
       throw new InternalServerErrorException(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         error?.message || 'An unexpected error occurred',
       );
     }

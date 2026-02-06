@@ -1,4 +1,5 @@
 import { Injectable, PreconditionFailedException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { supabase } from 'src/supabase/supabase-client';
 // import { v4 as uuid } from 'uuid';
 import nodemailer from 'nodemailer';
@@ -63,7 +64,8 @@ export class HelpersService {
     }
 
     const fileExt = file.originalname.split('.').pop();
-    const fileName = `${firstName} - ${mediaType}.${fileExt}`;
+    const uniqueId = randomUUID();
+    const fileName = `${firstName} - ${mediaType}-${uniqueId}.${fileExt}`;
     const filePath = `images/${fileName}`;
 
     const { data, error } = await supabase.storage
@@ -121,7 +123,7 @@ export class HelpersService {
 
       return mail;
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(error?.message);
     }
   }
 }
