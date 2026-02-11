@@ -74,8 +74,12 @@ export class PaymentController {
         }
 
         // Update payment record (by reference)
-        await this.prisma.payment.update({
-          where: { reference },
+        await this.prisma.payment.updateMany({
+          where: {
+            applicant: {
+              email,
+            },
+          },
           data: {
             status: 'success',
             paidAt: new Date(),
