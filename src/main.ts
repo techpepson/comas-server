@@ -7,7 +7,9 @@ import { configDotenv } from 'dotenv';
 
 async function bootstrap() {
   configDotenv();
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+  });
   app.setGlobalPrefix('api');
   app.enableCors({
     origin: [

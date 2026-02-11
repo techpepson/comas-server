@@ -34,8 +34,8 @@ export class ApplicationService {
                 reference: paymentData.data.reference,
                 amount:
                   createApplicationDto.applicantType == 'Undergraduate'
-                    ? 200
-                    : 300,
+                    ? 20000
+                    : 30000,
               },
             },
           },
