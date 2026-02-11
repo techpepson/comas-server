@@ -54,7 +54,7 @@ export class AdmissionController {
     @Query('user') user: string,
     @UploadedFiles()
     files: {
-      supportingDocument: Express.Multer.File[];
+      supportingDocument?: Express.Multer.File[];
       passportPhoto: Express.Multer.File[];
       idCardPhoto: Express.Multer.File[];
       declarationDocument?: Express.Multer.File[];

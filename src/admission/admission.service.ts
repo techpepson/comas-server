@@ -23,7 +23,7 @@ export class AdmissionService {
   //use an array of Express.Multer for multiple uploads, even for single file upload items
   async createAdmission(
     files: {
-      supportingDocument: Express.Multer.File[];
+      supportingDocument?: Express.Multer.File[];
       passportPhoto: Express.Multer.File[];
       idCardPhoto: Express.Multer.File[];
       declarationDocument?: Express.Multer.File[];
@@ -45,9 +45,6 @@ export class AdmissionService {
 
       if (!files.passportPhoto || files.passportPhoto.length === 0) {
         throw new BadRequestException('Passport Photo file is required');
-      }
-      if (!files.supportingDocument || files.supportingDocument.length === 0) {
-        throw new BadRequestException('Supporting Document file is required');
       }
 
       const applicant = await this.prisma.admission.findUnique({
@@ -340,7 +337,7 @@ export class AdmissionService {
         message: 'Application submitted successfully',
         applicantData,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in createAdmission:', error);
 
       if (
@@ -353,8 +350,7 @@ export class AdmissionService {
       }
 
       throw new InternalServerErrorException(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        error?.message || 'An unexpected error occurred',
+        error instanceof Error ? error.message : 'An unexpected error occurred',
       );
     }
   }
