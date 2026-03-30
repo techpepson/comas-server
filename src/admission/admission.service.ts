@@ -305,6 +305,7 @@ export class AdmissionService {
           ],
           context: {
             applicant: admissionDto,
+            postalAddress: admissionDto.postalAddress,
             passportPhoto: uploadedPassportPhoto?.publicUrl,
             idCardPhoto: uploadIdCardPhoto?.publicUrl,
             supportingDocument: uploadedSupportingDocument?.publicUrl,
