@@ -1,4 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
+import { HttpService } from '@nestjs/axios';
 import {
   BadRequestException,
   ConflictException,
@@ -11,6 +12,7 @@ import AdmissionDTO from 'src/dto/admission.dto';
 // import AdmissionDTO from 'src/dto/admission.dto';
 import { HelpersService } from 'src/helpers/helpers.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AdmissionService {
@@ -18,6 +20,7 @@ export class AdmissionService {
     private helpersService: HelpersService,
     private prisma: PrismaService,
     private readonly mailer: MailerService,
+    private readonly httpService: HttpService,
   ) {}
 
   //use an array of Express.Multer for multiple uploads, even for single file upload items
@@ -334,6 +337,66 @@ export class AdmissionService {
         );
       }
 
+      // Send payload to external admission platform
+      const payload = {
+        firstName: admissionDto.firstName,
+        lastName: admissionDto.lastName,
+        middleName: admissionDto.middleName,
+        email: admissionDto.email,
+        phoneNumber: admissionDto.phoneNumber,
+        dateOfBirth: new Date(admissionDto.dateOfBirth),
+        gender: admissionDto.gender,
+        nationality: admissionDto.nationality,
+        postalAddress: admissionDto.postalAddress,
+        maritalStatus: admissionDto.maritalStatus,
+        languages: Array.isArray(admissionDto.languages)
+          ? admissionDto.languages
+          : [admissionDto.languages],
+        programChoice: admissionDto.programChoice,
+        reference: admissionDto.reference,
+        addressOfReference: admissionDto.addressOfReference,
+        phoneOfReference: admissionDto.phoneOfReference,
+        emailOfReference: admissionDto.emailOfReference,
+        parentName: admissionDto.parentName,
+        parentPhoneNumber: admissionDto.parentPhoneNumber,
+        parentEmail: admissionDto.parentEmail,
+        parentAddress: admissionDto.parentAddress,
+        sponsor: admissionDto.sponsor,
+        passportPhoto: uploadedPassportPhoto?.publicUrl,
+        idCardPhoto: uploadIdCardPhoto?.publicUrl,
+        supportingDocument: uploadedSupportingDocument?.publicUrl,
+        declarationDocument: uploadedDeclarationDocument?.publicUrl,
+        supportingSponsorDocument: uploadedSupportingSponsorDocument?.publicUrl,
+        consentLetterFromSponsor: uploadedConsentLetterFromSponsor?.publicUrl,
+        supportingCertificates: uploadedSupportingCertificates,
+        academics: {
+          qualification: Array.isArray(admissionDto.qualification)
+            ? admissionDto.qualification
+            : [admissionDto.qualification],
+          institution: Array.isArray(admissionDto.institution)
+            ? admissionDto.institution
+            : [admissionDto.institution],
+          yearOfCompletion: Array.isArray(admissionDto.yearOfCompletion)
+            ? admissionDto.yearOfCompletion
+            : [admissionDto.yearOfCompletion],
+          country: Array.isArray(admissionDto.country)
+            ? admissionDto.country
+            : [admissionDto.country],
+          startDate: Array.isArray(admissionDto.startDate)
+            ? admissionDto.startDate
+            : [admissionDto.startDate],
+          endDate: Array.isArray(admissionDto.endDate)
+            ? admissionDto.endDate
+            : [admissionDto.endDate],
+        },
+        submissionTime: new Date(),
+      };
+
+      // Send to external platform (fire and forget with error logging)
+      this.sendToExternalPlatform(payload).catch((error) => {
+        console.error('Failed to send payload to external platform:', error);
+      });
+
       return {
         message: 'Application submitted successfully',
         applicantData,
@@ -353,6 +416,26 @@ export class AdmissionService {
       throw new InternalServerErrorException(
         error instanceof Error ? error.message : 'An unexpected error occurred',
       );
+    }
+  }
+
+  private async sendToExternalPlatform(payload: any): Promise<void> {
+    try {
+      const externalUrl = 'https://admissions.comasapp.com/admission/submit';
+
+      await firstValueFrom(
+        this.httpService.post(externalUrl, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          timeout: 30000, // 30 seconds timeout
+        }),
+      );
+
+      console.log('Payload sent successfully to external platform');
+    } catch (error) {
+      console.error('Error sending payload to external platform:', error);
+      throw error;
     }
   }
 }
